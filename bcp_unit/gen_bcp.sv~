@@ -1,0 +1,277 @@
+`include "register8.sv"
+`include "decoder_8_to_1.sv"
+`include "bcp_checker1.sv"
+`include "unit_clause_reg.sv"
+`include "gen_pe.sv"
+123132132132132132
+
+module gen_bcp #(var_num=4,initial_data_size=12)
+				(
+				    input logic [2:0] sel,
+				    input logic clk,
+					input logic rst,
+					input logic [var_num-1:0]en,
+					input logic [var_num-1:0] free,
+					input logic [var_num-1:0] assignment,
+					input logic [initial_data_size-1:0]initial_data,
+					input logic w_en,
+					input logic rw_en,
+					input logic sel_next,
+					output logic [var_num-1:0] unit_exist,
+					output logic [var_num-1:0] unit_clause,
+                    output logic [1:0] next_var,					
+					output logic bcp_finish_flag
+				);
+
+
+   logic [7:0] initial_bcp;
+   
+   logic [var_num-1:0] flag;
+   logic [var_num-1:0] assign_value;
+   
+   logic [var_num-1:0]assignment_reg;
+   logic [var_num-1:0]free_reg;
+   
+   
+   logic [1:0] pe_out;
+
+   
+
+   logic next_assignment;
+   logic [var_num-1:0] bcp_lock;
+   logic [var_num-1:0] bcp_lock_n;   
+   logic [var_num-1:0] bcp_en;
+   
+  always_comb begin
+    bcp_lock_n=~bcp_lock;
+    bcp_en=(en&bcp_lock_n);
+
+  end  
+   
+   
+   
+//   logic bcp_finish_flag;
+
+/*   
+   logic [2:0] sel;
+   logic [w-1:0] wd;
+   logic clk;
+*/
+
+/*
+   genvar   i;   
+   generate
+      for(i=0;i<w;i=i+1)begin :reg_instance        
+		register r1(.clk(clk),.w_en(a[i]),.wd(wd));
+      end
+   endgenerate
+*/
+
+
+
+
+  logic [1:0] encoded_implication_reg [var_num-1:0];
+  genvar j;
+  generate 
+    for(j=0;j<var_num;j=j+1)begin :bcp_instance
+	  bcp_checker1 b1( .clk(clk),
+	                   .rst(rst),
+					   .en(bcp_en[j]),
+					   .free(free_reg),
+					   .assignment(assignment_reg),
+					   .initial_data(initial_data),
+					   .bcp_initial(initial_bcp[j]),
+					   .unit_exist(unit_exist[j]),
+					   .encoded_implication(encoded_implication_reg[j]),
+					   .assign_value(assign_value[j]),
+					   .flag(flag[j])
+					   );
+	end  
+  endgenerate	  
+  
+  always@(posedge clk or posedge rst) begin
+    if(sel_next) begin
+	  next_var         <=   encoded_implication_reg[pe_out];
+      next_assignment  <=   assign_value[pe_out];
+    end
+    else begin
+	  next_var         <=   next_var;
+      next_assignment  <=   next_assignment;
+    end	
+  end
+  
+	 	  
+   decoder_8_to_1   de8(.de_in(sel),.de_out(initial_bcp));
+   
+  
+
+  gen_pe gp(
+			.pe_in(unit_clause),
+			.pe_out(pe_out)
+			);
+			
+ unit_clause_reg ucr
+			(
+			.unit_clause(unit_clause),  //output
+			.w_en(w_en),
+			.rw_en(rw_en),
+			.wd(unit_exist),
+			.delete_var(pe_out),
+			.clk(clk)		
+			); 
+
+
+  
+   
+   
+  always_comb begin
+    if(&flag==1)
+	  bcp_finish_flag=1'b1;
+    else
+      bcp_finish_flag=1'b0; 
+  end
+  
+  
+  
+  always@(posedge clk or posedge rst) begin
+    if(rst) begin
+	  assignment_reg  <=assignment;
+      free_reg        <=free;
+	  bcp_lock        <=8'd0;
+	end  
+	else if(rw_en) begin
+	  assignment_reg[next_var]     <=next_assignment;
+      free_reg[next_var]           <=1'b0;	
+	  bcp_lock[pe_out]             <=1'b1;
+	end
+    else begin
+	  assignment_reg  <=assignment_reg;
+      free_reg        <=free_reg;
+	  bcp_lock        <=bcp_lock;	  
+	end  
+  end 
+  
+  
+  
+  
+/*   
+   
+   initial
+    begin
+//    $monitor("gen_bcp.sel=%b",sel);	
+//    $monitor("gen_bcp.initial_bcp=%b",initial_bcp);	
+//      $monitor("gen_bcp.initial_data=%b",initial_data);	
+//      $monitor("gen_bcp.unit_exist=%b",unit_exist);	  
+//      $monitor("gen_bcp.flag=%b",flag);	  	  
+/*	#50
+
+    $display("bcp_instance[0]=%d",bcp_instance[0].b1.initial_data);	
+	#5
+    $display("bcp_instance[1]=%d",bcp_instance[1].b1.initial_data);
+	#5
+    $display("bcp_instance[2]=%d",bcp_instance[2].b1.initial_data);
+	#5
+    $display("bcp_instance[3]=%d",bcp_instance[3].b1.initial_data);	
+	#5
+    $display("bcp_instance[4]=%d",bcp_instance[4].b1.initial_data);	
+	#5
+    $display("bcp_instance[5]=%d",bcp_instance[5].b1.initial_data);	
+	#5
+    $display("bcp_instance[6]=%d",bcp_instance[6].b1.initial_data);		
+	
+
+	
+    end 
+  
+*/   
+   
+   
+/*  
+   initial
+    begin
+	#5
+	wd=8'd0;
+	sel=3'd0;
+	#5
+    $display("reg_instance[0]=%d",reg_instance[0].r1.rd);	
+	#5
+	wd=8'd1;
+	sel=3'd1;
+	#5
+    $display("reg_instance[1]=%d",reg_instance[1].r1.rd);
+	#5
+	wd=8'd2;
+	sel=3'd2;
+	#5
+    $display("reg_instance[2]=%d",reg_instance[2].r1.rd);
+	#5
+	wd=8'd3;
+	sel=3'd3;
+	#5
+    $display("reg_instance[3]=%d",reg_instance[3].r1.rd);	
+	
+	
+	
+	
+	#100 $finish;
+    end
+
+
+initial
+   begin
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2      
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2  	  
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2      
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2  
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2      
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2      
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2  	  
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2      
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2  
+      clk   = 1;   
+      #2 
+      clk   = 0;
+      #2      
+      clk   = 1;   
+      #2 
+      clk   = 0;
+            	  
+   end
+   
+   
+*/   
+   
+   
+   
+   endmodule

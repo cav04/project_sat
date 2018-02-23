@@ -1,0 +1,10 @@
+*design* DebussyLib (btIdent Verdi3_L-2016.06-SP1-1)
+Command arguments:
+    +define+verilog
+    /home/cav04/project/12_22/bcp_unit/conflict_analyzer.sv
+    -sv
+
+Highest level modules:
+conflict_analyzer
+
+Total	0 error(s),   0 warning(s)

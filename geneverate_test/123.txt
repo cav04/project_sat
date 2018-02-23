@@ -1,0 +1,58 @@
+Verilog-2001添加了generate循环，允许产生module和primitive的多个实例化，同时也可以产生多个 variable，net，task，function，continous assignment，initial和always。在generate语句中可以引入if-else和case语
+Verilog-2001添加了generate循环，允许产生module和primitive的多个实例化，同时也可以产生多个 variable，net，task，function，continous assignment，initial和always。在generate语句中可以引入if-else和case语句，根据条件不同产生不同的实例化。
+     
+      为此，Verilog-2001还增加了以下关键字：generate，endgenerate，genvar，localparam。genvar为新 增数据类型，存储正的integer。在generate语句中使用的index必须定义成genvar类型。localparam与parameter 有些类似，不过其不能通过redefinition改变值。除了可以在generate语句中使用if-else，case外，还能使用for语句进行循 环。
+     
+      下面是一个使用generate的例子，根据a_width和b_width的不同，实例化不同的multiplier。
+     
+      module multiplier (a, b, product);
+      parameter a_width = 8, b_width = 8;
+      localparam product_width = a_width+b_width;
+      input [a_width-1:0] a;
+      input [b_width-1:0] b;
+      output[product_width-1:0]product;
+      generate
+      if((a_width < 8) || (b_width < 8))
+      CLA_multiplier #(a_width, b_width)
+      u1 (a, b, product);
+      else
+      WALLACE_multiplier #(a_width, b_width)
+      u1 (a, b, product);
+      endgenerate
+      endmodule
+      在下面的例子中，在generate语句中使用了for语句。
+     
+      module Nbit_adder (co, sum, a, b, ci);
+      parameter SIZE = 4;
+      output [SIZE-1:0] sum;
+      output co;
+      input [SIZE-1:0] a, b;
+      input ci;
+      wire [SIZE:0] c;
+      genvar i;
+      assign c[0] = ci;
+      assign co = c[SIZE];
+      generate
+      for(i=0; i<SIZE; i="i"+1)
+      begin:addbit
+      wire n1,n2,n3; //internal nets
+      xor g1 ( n1, a[i], b[i]);
+      xor g2 (sum[i],n1, c[i]);
+      and g3 ( n2, a[i], b[i]);
+      and g4 ( n3, n1, c[i]);
+      or g5 (c[i+1],n2, n3);
+      end
+      endgenerate
+      endmodule
+      generate执行过程中，每一个generated net在每次循环中有唯一的名字，比如n1在4次循环中会产生如下名字：
+     
+      addbit[0].n1
+      addbit[1].n1
+      addbit[2].n1
+      addbit[3].n1
+      这也是为什么在begin-end块语句需要名字的一个原因。同样，实例化的module，gate等在每次循环中也有不同的名字。
+     
+      addbit[0].g1
+      addbit[1].g1
+      addbit[2].g1
+      addbit[3].g1

@@ -1,0 +1,10 @@
+data_mem.sv
+/home/cav04/11_13/geneverate_test/data_mem.sv
+gen_bcp.sv
+/home/cav04/11_13/geneverate_test/gen_bcp.sv
+register8.sv
+/home/cav04/11_13/geneverate_test/register8.sv
+decoder_3_to_8.sv
+/home/cav04/11_13/geneverate_test/decoder_3_to_8.sv
+initial_controller.sv
+/home/cav04/11_13/geneverate_test/initial_controller.sv

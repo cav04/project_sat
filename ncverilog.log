@@ -1,0 +1,7 @@
+ncverilog(64): 15.20-s039: (c) Copyright 1995-2017 Cadence Design Systems, Inc.
+TOOL:	ncverilog	15.20-s039: Started on Jan 04, 2018 at 15:19:49 CST
+ncverilog
+	initial_top.sv
+	+access+r
+ncverilog: *E,FILEMIS: Cannot find the provided file initial_top.sv.
+TOOL:	ncverilog	15.20-s039: Exiting on Jan 04, 2018 at 15:19:49 CST  (total: 00:00:00)

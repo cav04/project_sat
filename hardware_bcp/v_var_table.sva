@@ -1,0 +1,40 @@
+module v_var_table(	clock,reset,en,r_w,din,address,dout,table_finish);
+
+
+	parameter address_width=3;
+	parameter var_num=8;
+
+
+	input clock;
+	input reset;
+	input en;
+	input r_w;
+	input [var_num-1:0] din;
+	input [1:0] address;
+	input [var_num-1:0] dout;
+	input table_finish;
+	
+
+  property en_finish;
+    @(posedge clock) ((en == 1 ) |=>(table_finish==1));
+  endproperty
+  a_en_finish: assert property (en_finish);	
+
+  property write_en;
+    @(posedge clock) ((en == 1 && r_w == 0) |=>(var_table.variable_table[address]==din));
+  endproperty
+  a_write_en: assert property (write_en);	
+
+  
+endmodule
+	
+bind  var_table
+  v_var_table i_var_table
+  ( .clock(clock), 
+	.reset(reset), 
+	.en(en),
+	.r_w(r_w),
+	.din(din),
+	.address(address),
+	.dout(dout),
+	.table_finish(table_finish));

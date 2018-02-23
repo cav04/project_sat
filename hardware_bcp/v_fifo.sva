@@ -1,0 +1,101 @@
+module v_fifo(
+  clock, reset,
+  fifo_write,
+  fifo_read,
+  fifo_count,
+  fifo_full,
+//  fifo_hfull,
+  fifo_empty,
+//  fifo_hempty,
+  fifo_datain,
+  fifo_dataout
+);
+
+	parameter fifohempty_level = 1;
+	parameter fifohfull_level = 7;
+	parameter fifo_length = 8;
+	parameter fifo_length_log=3;
+	parameter data_size =8;
+
+
+	input clock;
+	input reset;
+	input fifo_write;
+	input fifo_read;	
+	input [3:0] fifo_count;
+	input fifo_full;
+	input fifo_empty;
+	input  [data_size-1:0] fifo_datain;
+	input  [data_size-1:0] fifo_dataout;
+	
+	
+	
+	wire pkt_in;
+	wire pkt_out;
+	wire [7:0] pkt_in_from_port;
+	wire [7:0] pkt_out_to_port;
+	wire polarity;	
+//	a_not_read_write: assume property(@(posedge clock) (!(fifo_write&&fifo_read)));
+/*
+  property en_finish;
+    @(posedge clock) ((en == 1 ) |=>(table_finish==1));
+  endproperty
+  a_en_finish: assert property (en_finish);	
+
+  property write_en;
+    @(posedge clock) ((en == 1 && r_w == 0) |=>(var_table.variable_table[address]==din));
+  endproperty
+  a_write_en: assert property (write_en);	
+*/
+
+	
+	ast_no_full_and_empty: assert 
+		property(@(posedge clock) (!(fifo_full && fifo_empty)));
+
+	ast_remain_full_until_read: 
+		assert property(@(posedge clock) ((fifo_full & !fifo_read) |=> fifo_full));
+
+	ast_remain_empty_until_write: 
+		assert property(@(posedge clock) ((fifo_empty & !fifo_write) |=>fifo_empty));
+
+
+  
+ jasper_scoreboard_2 #(8,8) dp 
+
+( .clk1(clock)
+, .clk2(clock)
+, .rst1N(reset)
+, .rst2N(reset)
+, .incoming_vld ({8{fifo_write}})
+, .incoming_data(fifo_datain)
+, .outgoing_vld ({8{fifo_read}})
+, .outgoing_data(fifo_dataout)
+
+, .random_packet_selected(pkt_in)
+, .selected_packet_exits (pkt_out)
+
+, .random_packet_selected_pport(pkt_in_from_port)
+, .selected_packet_exits_pport(pkt_out_to_port)
+
+,.polarity(polarity)
+); 
+  
+  
+  
+endmodule
+		
+	
+bind fifo
+v_fifo i_fifo
+(
+	.clock(clock),
+	.reset(reset),
+	.fifo_write(fifo_write),	
+	.fifo_read(fifo_read),
+	.fifo_count(fifo_count),
+	.fifo_full(fifo_full),
+	.fifo_empty(fifo_empty),
+	.fifo_datain(fifo_datain),
+	.fifo_dataout(fifo_dataout)
+);	
+	

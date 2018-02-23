@@ -1,0 +1,19 @@
+verdiDockWidgetDisplay -dock widgetDock_WelcomePage
+verdiDockWidgetHide -dock widgetDock_WelcomePage
+debImport "/home/cav04/project/12_05/bcp_unit/initial_top.sv" "-sv" -path \
+          {/home/cav04/project/12_05/bcp_unit}
+schCreateWindow -delim "." -win $_nSchema1 -scope "register"
+srcHBSelect "initial_top" -win $_nTrace1
+schSelect -win $_nSchema2 -inst "register\(@1\):Always1:11:17:RegCombo"
+schPushViewIn -win $_nSchema2
+srcSelect -win $_nTrace1 -range {11 17 1 3 1 1}
+schCloseWindow -win $_nSchema2
+nsMsgSwitchTab -tab general
+debImport "/home/cav04/project/12_05/bcp_unit/initial_top.sv" "-sv" -path \
+          {/home/cav04/project/12_05/bcp_unit}
+schCreateWindow -delim "." -win $_nSchema1 -scope "register"
+schSelect -win $_nSchema3 -inst "register\(@1\):Always1:11:17:RegCombo"
+schPushViewIn -win $_nSchema3
+srcSelect -win $_nTrace1 -range {11 17 1 3 1 1}
+srcDeselectAll -win $_nTrace1
+debExit

@@ -1,0 +1,102 @@
+module v_priority_encoder (
+  in, pe_request,clock,
+  out, pe_work);
+
+  input [7:0] in;
+  input pe_request;
+  input [2:0]out;
+  input pe_work;
+  input clock;
+  reg [7:0] temp;
+  reg [2:0] temp_out;
+  
+  always@(posedge clock)
+  begin
+	temp=in;
+		if(temp[7]==1)
+			temp_out<=3'b111;
+		else if(temp[6]==1)	
+			temp_out<=3'b110;
+		else if(temp[5]==1)	
+			temp_out<=3'b101;
+		else if(temp[4]==1)	
+			temp_out<=3'b100;
+		else if(temp[3]==1)	
+			temp_out<=3'b011;
+		else if(temp[2]==1)	
+			temp_out<=3'b010;
+		else if(temp[1]==1)	
+			temp_out<=3'b001;
+		else if(temp[0]==1)	
+			temp_out<=3'b000;
+		else
+			temp_out<=3'b000;
+  end
+  
+  
+  property output_equivalent_t;
+    @(posedge clock) ((pe_request==0&&pe_work==1) 
+	|=> (out==temp_out));
+  endproperty
+  a_output_equivalent_t: assert property (output_equivalent_t);    
+  
+  
+  
+  property en_finish;
+    @(posedge clock) (pe_request==0 &&pe_work==1 ) |=> $fell(pe_work);
+  endproperty
+  a_en_finish: assert property (en_finish);
+
+  
+/*  
+  property output_equivalent1;
+    @(posedge clock) ((pe_request==0&&pe_work==1) && (in==8'b00000001)) |=> (out==3'b000);
+  endproperty
+  a_output_equivalent1: assert property (output_equivalent1);  
+  
+  property output_equivalent2;
+    @(posedge clock) (pe_request==0&&pe_work==1) && (in==8'b0000001x) |=> (out==3'b001);
+  endproperty
+  a_output_equivalent2: assert property (output_equivalent2);  
+ 
+  property output_equivalent3;
+    @(posedge clock) (pe_request==0&&pe_work==1) && (in==8'b000001xx) |=> (out==3'b010);
+  endproperty
+  a_output_equivalent3: assert property (output_equivalent3); 
+
+  property output_equivalent4;
+    @(posedge clock) ((pe_request==0&&pe_work==1) && (in==8'b0000_1xxx)) |=> (out==3'b011);
+  endproperty
+  a_output_equivalent4: assert property (output_equivalent4);  
+  
+  property output_equivalent5;
+    @(posedge clock) (pe_request==0&&pe_work==1) && (in==8'b0001_xxxx) |=> (out==3'b100);
+  endproperty
+  a_output_equivalent5: assert property (output_equivalent5);  
+ 
+  property output_equivalent6;
+    @(posedge clock) (pe_request==0&&pe_work==1) && (in==8'b001x_xxxx) |=> (out==3'b101);
+  endproperty
+  a_output_equivalent6: assert property (output_equivalent6); 
+
+  property output_equivalent7;
+    @(posedge clock) ((pe_request==0&&pe_work==1) && (in==8'b01xx_xxxx)) |=> (out==3'b110);
+  endproperty
+  a_output_equivalent7: assert property (output_equivalent7);  
+*/ 
+
+ 
+  property pe_work_rose;
+    @(posedge clock) ((!pe_work)
+	|=>$rose(pe_work));
+  endproperty
+  a_pe_work_rose: assert property (pe_work_rose);  
+  
+ endmodule
+
+
+bind priority_encoder
+  v_priority_encoder i_priority_encoder (
+  .in(in), .pe_request(pe_request),.clock(clock),
+  .out(out), .pe_work(pe_work)
+);

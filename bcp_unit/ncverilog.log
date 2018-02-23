@@ -1,0 +1,145 @@
+ncverilog(64): 15.20-s039: (c) Copyright 1995-2017 Cadence Design Systems, Inc.
+TOOL:	ncverilog	15.20-s039: Started on Feb 22, 2018 at 14:56:49 CST
+ncverilog
+	t_sat_top.sv
+	+access+r
+Recompiling... reason: file './bcp_controller.sv' is newer than expected.
+	expected: Thu Feb 22 14:55:34 2018
+	actual:   Thu Feb 22 14:56:47 2018
+file: t_sat_top.sv
+	module worklib.priority_encoder:sv
+		errors: 0, warnings: 0
+`define var_num 8
+                 |
+ncvlog: *W,MACRDF (variable_state_table.sv,1|17): text macro 'var_num' redefined - replaced with new definition.
+(`include file: variable_state_table.sv line 1, `include file: sat_top.sv line 5, file: t_sat_top.sv line 9)
+`define state_num 4
+                   |
+ncvlog: *W,MACRDF (central_controller.sv,4|19): text macro 'state_num' redefined - replaced with new definition.
+(`include file: central_controller.sv line 4, `include file: sat_top.sv line 6, file: t_sat_top.sv line 9)
+module priority_encoder(
+                      |
+ncvlog: *W,RECOME (./priority_encoder.sv,5|22): recompiling design unit worklib.priority_encoder:sv.
+	First compiled from line 5 of priority_encoder.sv.
+(`include file: ./priority_encoder.sv line 5, `include file: bcp_checker1.sv line 2, `include file: gen_bcp.sv line 3, `include file: bcp_top.sv line 2, `include file: sat_top.sv line 7, file: t_sat_top.sv line 9)
+	module worklib.priority_encoder:sv
+		errors: 0, warnings: 1
+                    output logic [`var_num-1:0] assignment_reg,
+                         |
+ncvlog: *W,POLICI (gen_bcp.sv,37|25): comma assumed just prior to this symbol to separate declarations in ANSI port list.
+(`include file: gen_bcp.sv line 37, `include file: bcp_top.sv line 2, `include file: sat_top.sv line 7, file: t_sat_top.sv line 9)
+	module worklib.bcp_controller:sv
+		errors: 0, warnings: 0
+	Total errors/warnings found outside modules and primitives:
+		errors: 0, warnings: 2
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+ decision_engine decision_engine1(
+                                |
+ncelab: *W,CUVWSP (./sat_top.sv,94|32): 1 output port was not connected:
+ncelab: (./decision_engine.sv,21): curr_var_reg
+
+  central_controller central_controller1(
+                                       |
+ncelab: *W,CUVWSP (./sat_top.sv,109|39): 2 output ports were not connected:
+ncelab: (./central_controller.sv,22): sat_finish
+ncelab: (./central_controller.sv,23): sat
+
+	clause_db cdb(  
+	            |
+ncelab: *W,CUVWSI (./sat_top.sv,168|13): 1 input port was not connected:
+ncelab: (./clause_db.sv,12): clause_db_in
+
+    bcp_controller bc1 (  .clk(clk),
+                     |
+ncelab: *W,CUVWSP (./bcp_top.sv,87|21): 2 output ports were not connected:
+ncelab: (./bcp_controller.sv,35): gen_bcp_free
+ncelab: (./bcp_controller.sv,36): gen_bcp_assignment
+
+    bcp_controller bc1 (  .clk(clk),
+                     |
+ncelab: *W,CUVWSI (./bcp_top.sv,87|21): 1 input port was not connected:
+ncelab: (./bcp_controller.sv,17): bcp_engine_vst_out
+
+ unit_clause_reg ucr
+                   |
+ncelab: *W,CUVWSI (./gen_bcp.sv,221|19): 1 input port was not connected:
+ncelab: (./unit_clause_reg.sv,10): rst
+
+ncelab: *W,DSEMEL: This SystemVerilog design will be simulated as per IEEE 1800-2009 SystemVerilog simulation semantics. Use -disable_sem2009 option for turning off SV 2009 simulation semantics.
+				  .vst_out(decision_vst_out),		
+				                          |
+ncelab: *W,CUVMPW (./sat_top.sv,101|30): port sizes differ in port connection (8/7).
+				  .vst_address(decision_vst_address),
+				                                  |
+ncelab: *W,CUVMPW (./sat_top.sv,103|38): port sizes differ in port connection (3/2).
+			.pe_in(pe_in),
+			           |
+ncelab: *W,CUVMPW (./decision_engine.sv,137|14): port sizes differ in port connection (7/8).
+				  .central_clause_db_address(central_clause_db_address),
+				                                                     |
+ncelab: *W,CUVMPW (./sat_top.sv,132|57): port sizes differ in port connection (3/8).
+						  .cdb_address(bcp_engine_clause_db_address),
+						                                          |
+ncelab: *W,CUVMPW (./bcp_top.sv,109|48): port sizes differ in port connection (8/3).
+  conflict_analyzer ca1(.mask(conflict_reg),
+                                         |
+ncelab: *W,CUVMPW (./gen_bcp.sv,233|41): port sizes differ in port connection (7/8).
+	Building instance overlay tables: .................... Done
+	Generating native compiled code:
+		worklib.bcp_controller:sv <0x78ae75e0>
+			streams:  14, words: 55469
+		worklib.priority_encoder:sv <0x5333ceb5>
+			streams:   1, words:  2746
+	Building instance specific data structures.
+                  .backtrack_done(backtrack_done),
+                                               |
+ncelab: *W,CSINFI (./sat_top.sv,119|47): implicit wire has no fanin (t_sat_top.sat_top1.backtrack_done).
+				  .decide_next_var(decide_next_var),  
+				                                 |
+ncelab: *W,CSINFI (./sat_top.sv,116|37): implicit wire has no fanin (t_sat_top.sat_top1.decide_next_var).
+	Loading native compiled code:     .................... Done
+	Design hierarchy summary:
+		               Instances  Unique
+		Modules:              88      19
+		Primitives:           56       1
+		Registers:           459     248
+		Scalar wires:        638       -
+		Expanded wires:      112      14
+		Vectored wires:      144       -
+		Always blocks:       109      58
+		Initial blocks:        3       3
+		Cont. assignments:    56       1
+		Pseudo assignments:  550     154
+	Writing initial simulation snapshot: worklib.register:sv
+Loading snapshot worklib.register:sv .................... Done
+ncsim: *W,DSEM2009: This SystemVerilog design is simulated as per IEEE 1800-2009 SystemVerilog simulation semantics. Use -disable_sem2009 option for turning off SV 2009 simulation semantics.
+*Verdi3* Loading libsscore_ius152.so
+*Verdi3* : Enable Parallel Dumping.
+ncsim> source /usr/cad/cadence/INCISIV/cur/tools/inca/files/ncsimrc
+ncsim> run
+FSDB Dumper for IUS, Release Verdi3_L-2016.06-SP1-1, Linux x86_64/64bit, 09/27/2016
+(C) 1996 - 2016 by Synopsys, Inc.
+*Verdi3* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
+*Verdi3* : Create FSDB file 't_sat_top.fsdb'
+*Verdi3* : Begin traversing the scope (t_sat_top), layer (0).
+*Verdi3* : End of traversing.
+       vst1[ 0]=11111110
+       vst1[ 1]=11111110
+       vst1[ 2]=00000000
+=================================================
+       cdb[ 0]=0010001
+       cdb[ 1]=0000011
+       cdb[ 2]=0100010
+       cdb[ 3]=0001100
+       cdb[ 4]=0000100
+       cdb[ 5]=1111000
+       cdb[ 6]=1111000
+=================================================
+       vst1[ 0]=11111000
+       vst1[ 1]=11111010
+       vst1[ 2]=00000110
+Simulation complete via $finish(1) at time 2040 NS + 0
+./t_sat_top.sv:75        $finish;	  
+ncsim> exit
+TOOL:	ncverilog	15.20-s039: Exiting on Feb 22, 2018 at 14:56:52 CST  (total: 00:00:03)

@@ -1,0 +1,2 @@
+ncverilog: *E,VLGERR: An error occurred during parsing.  Review the log file for errors with the code *E and fix those identified problems to proceed.  Exiting with code (status 2).
+TOOL:	ncverilog	15.20-s027: Exiting on Nov 23, 2017 at 21:42:41 EST  (total: 00:00:01)

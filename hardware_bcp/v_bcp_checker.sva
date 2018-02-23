@@ -1,0 +1,110 @@
+module v_bcp_checker(clock
+					,reset
+					,en
+					,free
+					,assignment
+					,clause_type
+					,clause_mask
+					,clause_size
+					,counter
+					,unit_exist
+					,implication
+					,bcp_finish	);
+
+	parameter var_num=8;
+
+
+	input  clock;
+	input  reset;
+	input  en;
+	input [var_num-1:0]free;
+	input [var_num-1:0]assignment;
+	input [var_num-1:0]clause_type;
+	input [var_num-1:0]clause_mask;
+	input [var_num-1:0]clause_size;
+	input [var_num-1:0]counter;	
+	input unit_exist;
+	input [var_num-1:0] implication;
+	input bcp_finish;
+	
+  property overflow_dectect;
+    @(posedge clock) disable iff (!reset)
+	((en)&&(bcp_checker1.counter_reg==8'b1111_1111)
+	|=>((bcp_checker1.counter_reg==($past(bcp_checker1.counter_reg)))));
+  endproperty
+  a_overflow_dectect: assert property (overflow_dectect);		
+
+  property test2;
+    @(posedge clock) disable iff (!reset)
+	((en)
+	|=>((bcp_checker1.implication==($past(bcp_checker1.implication_wire)))));
+  endproperty
+  a_test2: assert property (test2);	  
+  
+  
+  property bcp_finish_rise;
+    @(posedge clock) disable iff (!reset)
+	((!bcp_finish )&&((!en))
+	|=>(bcp_finish));
+  endproperty
+  a_bcp_finish_rise: assert property (bcp_finish_rise);	  
+  
+  
+  
+  property test3;
+    @(posedge clock) disable iff (!reset)
+	((bcp_checker1.part_sat==1)|->((&bcp_checker1.na_out)==1)	);
+  endproperty
+  a_test3: assert property (test3);  
+  
+  
+/*
+	
+	reg[2:0] i;
+	
+	reg[2:0] pe_out=0;
+
+  
+  always@(bcp_checker1.implication_wire)
+  begin
+	if(!reset)
+	begin
+		pe_out=0;
+	end	
+	else	
+		for(i=0;i<8;i=i+1)
+		begin	
+			if(bcp_checker1.implication_wire[7-i]==1)
+				pe_out=8-i;
+			else
+				pe_out=pe_out;
+		end	
+  end
+  
+
+  
+  
+    property test4;
+    @(posedge clock) disable iff (!reset)
+	((en)|->(pe_out==bcp_checker1.encoded_implication));
+	endproperty
+  a_test4: assert property (test4); 
+  
+ */ 
+
+endmodule
+	
+bind  bcp_checker1
+  v_bcp_checker i_bcp_checker
+				( 	.clock(clock),
+					.reset(reset),
+					.en(en),
+					.free(free),
+					.assignment(assignment),
+					.clause_type(clause_type),
+					.clause_mask(clause_mask),
+					.clause_size(clause_size),
+					.counter(counter),
+					.unit_exist(unit_exist),
+					.implication(implication),
+					.bcp_finish(bcp_finish)	);

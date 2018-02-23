@@ -1,0 +1,40 @@
+*design* DebussyLib (btIdent Verdi3_2013.07)
+Command arguments:
+    +define+verilog
+    /home/cav04/11_13/geneverate_test/gen_reg3.sv
+    -sv
+
+Highest level modules:
+gen_register
+
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input0)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 89: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input1)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 90: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input2)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 91: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input3)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 92: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input4)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 93: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input5)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 94: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input6)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 95: 
+
+*Warning* port sizes differ (1 vs 2) in port connection (port input7)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 96: 
+
+*Warning* port sizes differ (1 vs 3) in port connection (port sel)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 97: 
+
+*Warning* port sizes differ (1 vs 32) in port connection (port mux_out)
+"/home/cav04/11_13/geneverate_test/gen_reg3.sv", 98: 
+Total	0 error(s),   10 warning(s)

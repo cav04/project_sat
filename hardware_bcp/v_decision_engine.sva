@@ -1,0 +1,183 @@
+module v_decision_engine(clock,reset,decision_en,var_out,decision_finish,assignment);
+
+
+	parameter var_num=8;
+	parameter address_width=3;	
+
+
+	input clock;
+	input reset;
+	input decision_en;
+	input [var_num-1:0]var_out;
+	input decision_finish;
+	input assignment;
+	
+  property idle_to_access;
+    @(posedge clock) disable iff (!reset)
+	(((decision_en==1'b1)&&(decision_engine.curr_state==2'b00) )|=>(decision_engine.curr_state==2'b01));
+  endproperty
+  a_idle_to_access: assert property (idle_to_access);		
+
+  property access_to_pe;
+    @(posedge clock) disable iff (!reset)
+	(((var_mem.mem_work==1'b1)&&(decision_engine.curr_state==2'b01) )
+	|=>(decision_engine.curr_state==2'b10));
+  endproperty
+  a_access_to_pe: assert property (access_to_pe);	
+
+
+  property pe_to_rewrite;
+    @(posedge clock) disable iff (!reset)
+	(((var_mem.pe_work==1'b0)&&(decision_engine.curr_state==2'b10) )
+	|=>(decision_engine.curr_state==2'b11));
+  endproperty
+  a_pe_to_rewrite: assert property (pe_to_rewrite);	
+
+  property rewrite_to_idle;
+    @(posedge clock) disable iff (!reset)
+	(((decision_engine.rewite_free_state_finish==1'b1)&&(decision_engine.curr_state==2'b11) )
+	|=>(decision_engine.curr_state==2'b00));
+  endproperty
+  a_rewrite_to_idle: assert property (rewrite_to_idle);	  
+  
+  
+  property idle;
+    @(posedge clock) disable iff (!reset)
+	((decision_engine.curr_state==2'b00)
+	|->
+	(decision_engine.mem_request==1'b1)&&
+	(decision_engine.data_read==1'b0)&&
+	(decision_engine.data_write==1'b0)
+	);
+  endproperty
+  a_idle: assert property (idle);  
+  
+  
+  property access;
+    @(posedge clock) disable iff (!reset)
+	((decision_engine.curr_state==2'b01)
+	|->
+	(decision_engine.mem_request==1'b0)&&
+	(decision_engine.data_read==1'b1)&&
+	(decision_engine.data_write==1'b0)&&
+	(decision_engine.address==2'b01)&&
+	(decision_engine.decision_finish==1'b0)	
+	);
+  endproperty
+  a_access: assert property (access);
+  
+  
+  property priority_encode;
+    @(posedge clock) disable iff (!reset)
+	((decision_engine.curr_state==2'b01)
+	|->
+	(decision_engine.mem_request==1'b0)&&
+	(decision_engine.data_read==1'b1)&&
+	(decision_engine.data_write==1'b0)&&
+	(decision_engine.address==2'b01)&&
+	(decision_engine.decision_finish==1'b0)	
+	);
+  endproperty
+  a_priority_encode: assert property (priority_encode);
+
+
+
+
+  
+  
+  
+  property read_write_not_at_the_same_time;
+    @(posedge clock)disable iff (!reset)
+	(!(decision_engine.data_read&&decision_engine.data_write));
+  endproperty
+  a_read_write_not_at_the_same_time: assert property (read_write_not_at_the_same_time);  
+
+  property rewirte_enable;
+    @(posedge clock)disable iff (!reset)
+	((decision_engine.curr_state==2'b11)
+	|=>(var_mem.mem_data[1][$past(decision_engine.assign_var)]==0));
+  endproperty
+  a_rewirte_enable: assert property (rewirte_enable);  
+
+
+
+  property no_deadlock;
+	@(posedge clock)disable iff (!reset)
+   	((decision_engine.curr_state==2'b00)&&(decision_engine.decision_en==1)
+	|=>##[1:$](decision_engine.curr_state==2'b00));
+  endproperty
+  a_no_deadlock: assert property (no_deadlock);   
+  
+  
+  property write_no_unknown;
+	@(posedge clock)disable iff (!reset)
+   	((decision_engine.write==1'b1)
+	|=>!($isunknown(var_mem.address)));
+  endproperty
+  a_write_no_unknown: assert property (write_no_unknown);     
+  
+  property read_no_unknown;
+	@(posedge clock)disable iff (!reset)
+   	((decision_engine.read==1'b1)
+	|=>!($isunknown(var_mem.address)));
+  endproperty
+  a_read_no_unknown: assert property (read_no_unknown);       
+  
+  
+  
+  
+/*  
+   property mem_request;
+    @(posedge clock) disable iff (!reset)
+	((!(decision_engine.mem_work)&&(!decision_engine.mem_request))
+	|->$rose(decision_engine.mem_request));
+  endproperty
+  a_mem_request: assert property (mem_request);  
+*/
+
+
+
+  
+  
+  
+  property mem_deadlock;
+    @(posedge clock) disable iff (!reset)
+	(((decision_engine.curr_state==2'b01) )
+	|=>##[0:$](decision_engine.curr_state==2'b01));
+  endproperty
+  a_mem_deadlock: assert property (mem_deadlock);  
+
+  property pe_deadlock;
+    @(posedge clock) disable iff (!reset)
+	(((decision_engine.curr_state==2'b10) )
+	|=>##[0:$](decision_engine.curr_state==2'b10));
+  endproperty
+  a_pe_deadlock: assert property (pe_deadlock); 
+
+  property rewrite_deadlock;
+    @(posedge clock) disable iff (!reset)
+	(((decision_engine.curr_state==2'b11) )
+	|=>##[0:$](decision_engine.curr_state==2'b11));
+  endproperty
+  a_rewrite_deadlock: assert property (rewrite_deadlock);   
+  
+  property mem_to_idle;
+    @(posedge clock) disable iff (!reset)
+	(((decision_engine.curr_state==2'b01) )
+	|=>##[0:$](decision_engine.curr_state==2'b00));
+  endproperty
+  a_mem_to_idle: assert property (mem_to_idle);	  
+  
+
+
+
+endmodule
+	
+bind  decision_engine
+  v_decision_engine i_decision_engine
+  ( .clock(clock), 
+	.reset(reset), 
+	.decision_en(decision_en),
+	.var_out(var_out),
+	.decision_finish(decision_finish),
+	.assignment(assignment));
